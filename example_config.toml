@@ -1,0 +1,6 @@
+[bot]
+token = ""
+default_prefix = ""
+
+[database]
+uri = ""

@@ -1,0 +1,5 @@
+git+https://github.com/revoltchat/revolt.py
+asyncpg
+git+https://github.com/bryanforbes/asyncpg-stubs
+toml
+lru-dict
