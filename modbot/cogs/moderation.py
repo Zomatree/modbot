@@ -16,6 +16,7 @@ mod_actions = {
 
 class Moderation(commands.Cog[Client]):
     @commands.command()
+    @server_only()
     @commands.has_permissions(ban_members=True)
     async def ban(
         self,
@@ -83,6 +84,7 @@ class Moderation(commands.Cog[Client]):
             await log_channel.send(embed=embed)
 
     @commands.command()
+    @server_only()
     @commands.has_permissions(kick_members=True)
     async def kick(
         self, ctx: Context, member: commands.MemberConverter, *, reason: str | None
@@ -137,6 +139,7 @@ class Moderation(commands.Cog[Client]):
             await log_channel.send(embed=embed)
 
     @commands.command()
+    @server_only()
     @commands.has_permissions(manage_messages=True)
     async def warn(
         self, ctx: Context, member: commands.MemberConverter, *, reason: str | None
@@ -189,6 +192,7 @@ class Moderation(commands.Cog[Client]):
             await log_channel.send(embed=embed)
 
     @commands.command()
+    @server_only()
     @commands.has_permissions(manage_messages=True)
     async def timeout(
         self,

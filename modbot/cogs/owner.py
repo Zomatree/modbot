@@ -2,7 +2,6 @@ import inspect
 import re
 import traceback
 
-import revolt
 from revolt.ext import commands
 
 from ..client import Client, Context

@@ -1,0 +1,29 @@
+create table server_configs (
+    server_id text primary key,
+    prefix text,
+    log_channel text
+);
+
+create type mod_action as enum ('kick', 'ban', 'timeout', 'warn');
+
+create table mod_actions (
+    id text primary key not null,
+    server_id text foreign key references server_configs(id) on delete cascade,
+    moderator_id text not null,
+    action mod_action not null,
+    user_id text not null,
+    reason text default null
+);
+
+create table reaction_role_messages (
+    id text primary key not null,
+    server_id text foreign key references server_configs(id) on delete cascade,
+);
+
+create table reaction_roles (
+    message_id text foreign key references reaction_role_messages(id) on delete cascade,
+    role_id text not null,
+    emoji text not null,
+
+    primary key (message_id, emoji)
+)

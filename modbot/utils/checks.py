@@ -1,5 +1,6 @@
 from revolt.ext import commands
 
+__all__ = ("server_only",)
 
 def server_only():
     def inner(ctx: commands.Context):

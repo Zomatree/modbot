@@ -1,7 +1,7 @@
 from textwrap import indent
-from typing import Optional
 
 import revolt
+from typing import cast
 from revolt.ext import commands
 
 from ..client import Client, Context
@@ -11,10 +11,10 @@ prefix = "\u200b \u200b \u200b "
 class HelpCommand(commands.HelpCommand[Client]):
     async def create_bot_help(
         self,
-        ctx: Context,
+        context: commands.Context,
         commands: dict[commands.Cog[Client] | None, list[commands.Command[Client]]],
     ) -> str:
-        lines = []
+        lines: list[str] = []
 
         for cog, cog_commands in commands.items():
             cog_lines: list[str] = []
@@ -31,8 +31,8 @@ class HelpCommand(commands.HelpCommand[Client]):
 
         return "\n".join(lines).rstrip()
 
-    async def create_cog_help(self, ctx: Context, cog: commands.Cog[Client]) -> str:
-        lines = []
+    async def create_cog_help(self, context: commands.Context, cog: commands.Cog[Client]) -> str:
+        lines: list[str] = []
 
         lines.append(f"{cog.qualified_name}:")
 
@@ -44,9 +44,9 @@ class HelpCommand(commands.HelpCommand[Client]):
         return "\n".join(lines)
 
     async def create_command_help(
-        self, ctx: Context, command: commands.Command[Client]
+        self, context: commands.Context, command: commands.Command[Client]
     ) -> str:
-        lines = []
+        lines: list[str] = []
 
         lines.append(f"{command.name}:")
         lines.append(f"{prefix}Usage: {command.get_usage()}")
@@ -60,9 +60,9 @@ class HelpCommand(commands.HelpCommand[Client]):
         return "\n".join(lines)
 
     async def create_group_help(
-        self, ctx: Context, group: commands.Group[Client]
+        self, context: commands.Context, group: commands.Group[Client]
     ) -> str:
-        lines = []
+        lines: list[str] = []
 
         lines.append(f"{group.name}:")
         lines.append(f"{prefix}Usage: {group.get_usage()}")
@@ -81,17 +81,20 @@ class HelpCommand(commands.HelpCommand[Client]):
         return "\n".join(lines)
 
     async def send_help_command(
-        self, ctx: Context, message_payload: commands.MessagePayload
+        self, context: commands.Context, message_payload: commands.MessagePayload
     ) -> revolt.Message:
-        return await ctx.embed_send(message_payload["content"])
+        context = cast(Context, context)
+        return await context.embed_send(message_payload["content"])
 
-    async def handle_no_cog_found(self, ctx: Context, name: str):
-        return await ctx.embed_send(
+    async def handle_no_cog_found(self, context: commands.Context, name: str):
+        context = cast(Context, context)
+        return await context.embed_send(
             f"No category called `{name}` found.", status="fail"
         )
 
-    async def handle_no_command_found(self, ctx: Context, name: str):
-        return await ctx.embed_send(f"No command called `{name}` found.", status="fail")
+    async def handle_no_command_found(self, context: commands.Context, name: str):
+        context = cast(Context, context)
+        return await context.embed_send(f"No command called `{name}` found.", status="fail")
 
 
 def setup(client: Client):
