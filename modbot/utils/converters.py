@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 import datetime
 import re
 from typing import TYPE_CHECKING, Annotated
@@ -20,11 +22,18 @@ __all__ = (
     "RoleConverter"
 )
 
+id_regex = re.compile(r"[0-9A-HJKMNP-TV-Z]{26}")
 time_regex = re.compile(r"(\d{1,5}(?:[.,]?\d{1,5})?)([smhd])")
+message_link_regex = re.compile(r"(?:http(?:s)?:\/\/)?(?:\w+\.?)+?\/server\/(?P<server>[0-9A-HJKMNP-TV-Z]{26})\/channel\/(?P<channel>[0-9A-HJKMNP-TV-Z]{26})\/(?P<message>[0-9A-HJKMNP-TV-Z]{26})")
 time_dict = {"h": 3600, "s": 1, "m": 60, "d": 86400}
 
-
 class TimedeltaConverterError(commands.ConverterError):
+    pass
+
+class MessageConverterError(commands.ConverterError):
+    pass
+
+class RoleConverterError(commands.ConverterError):
     pass
 
 class MissingRequiredArgument(commands.CommandError):
@@ -48,11 +57,43 @@ def timedelta_converter(ctx: Context, argument: str) -> datetime.timedelta:
 
     return datetime.timedelta(seconds=time)
 
-def message_converter(ctx: Context, argument: str) -> revolt.Message:
-    ...
+async def message_converter(ctx: Context, argument: str) -> revolt.Message:
+    if match := message_link_regex.match(argument):
+        try:
+            server = ctx.client.get_server(match.group("server"))
+            channel = server.get_channel(match.group("channel"))
+            if not isinstance(channel, revolt.Messageable):
+                raise MessageConverterError
+
+            message = await channel.fetch_message(match.group("message"))
+        except (LookupError, revolt.HTTPError):
+            raise MessageConverterError
+
+    elif match := id_regex.match(argument):
+        try:
+            message = await ctx.channel.fetch_message(argument)
+        except revolt.HTTPError:
+            raise MessageConverterError
+
+    else:
+        for message in ctx.client.state.messages:
+            if message.id == argument:
+                break
+        else:
+            raise MessageConverterError
+
+    return message
+
 
 def role_converter(ctx: Context, argument: str) -> revolt.Role:
-    ...
+    if role := ctx.server.get_role(argument):
+        return role
+
+    for role in ctx.server.roles:
+        if role.name == argument:
+            return role
+
+    raise RoleConverterError
 
 TimedeltaConverter = Annotated[datetime.timedelta, timedelta_converter]
 MessageConverter = Annotated[revolt.Message, message_converter]

@@ -55,7 +55,7 @@ class HelpCommand(commands.HelpCommand[Client]):
             lines.append(f"{prefix}Aliases: {', '.join(command.aliases)}")
 
         if command.description:
-            lines.append(indent(command.description, "{prefix}"))
+            lines.append(indent(command.description, prefix))
 
         return "\n".join(lines)
 

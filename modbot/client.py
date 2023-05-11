@@ -133,6 +133,11 @@ class Client(commands.CommandsClient):
                 else:
                     await member.edit(roles=new_roles)
 
+statuses = {
+    "ok": "var(--accent)",
+    "fail": "var(--error)"
+}
+
 class Context(commands.Context[Client]):
     async def embed_send(
         self, content: str, *, status: Literal["ok", "fail"] = "ok"
@@ -142,6 +147,7 @@ class Context(commands.Context[Client]):
 
         return await self.send(
             embed=revolt.SendableEmbed(
-                icon_url=avatar.url, title="Moderation Bot", description=content
+                icon_url=avatar.url, title="Moderation Bot", description=content,
+                colour = statuses[status]
             )
         )

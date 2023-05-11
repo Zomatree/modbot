@@ -1,3 +1,4 @@
+import argparse
 import asyncio
 
 import asyncpg
@@ -7,10 +8,15 @@ import logging
 from .client import Client
 from .utils import database_hook, load_config
 
-logging.basicConfig(level=logging.DEBUG)
+
+parser = argparse.ArgumentParser()
+parser.add_argument("config", help="config file for the bot")
 
 async def main():
-    config = load_config()
+    args = parser.parse_args()
+
+    config = load_config(args.config)
+    logging.basicConfig(level=logging.DEBUG)
 
     async with revolt.utils.client_session() as session, asyncpg.create_pool(
         config.database.uri, setup=database_hook

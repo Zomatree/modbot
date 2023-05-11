@@ -9,7 +9,7 @@ class ReactionRoles(commands.Cog[Client]):
     @server_only()
     @commands.has_permissions(manage_roles=True)
     async def reaction_roles(self, ctx: Context):
-        ...
+        await ctx.send_help(self.reaction_roles)
 
     @reaction_roles.command()
     @server_only()

@@ -21,6 +21,6 @@ class Config:
         self.database = DatabaseConfig(data["database"])
 
 
-def load_config():
-    with open("config.toml") as f:
+def load_config(filename: str):
+    with open(filename) as f:
         return Config(dict(toml.load(f)))
